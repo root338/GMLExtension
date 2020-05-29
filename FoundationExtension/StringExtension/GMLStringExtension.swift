@@ -105,13 +105,3 @@ extension String {
         return String.spliceString(numberValue: numberValue ?? 0, insetIndex: 1, isZeroOrNilEndSplice: false, strs: "¥")
     }
 }
-
-//MARK:- 路径处理
-extension String {
-    var ml_pathExtension: String {
-        return (self as NSString).pathExtension
-    }
-    func ml_append(pathExtension: String) {
-        return (self as NSString).appendingPathExtension(pathExtension)
-    }
-}

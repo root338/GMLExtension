@@ -10,6 +10,12 @@ import Foundation
 
 extension FileManager {
     
+    enum EnumeratorOperate {
+        case none
+        case `continue`
+        case `return`
+    }
+    
     /// 验证文件路径是否是文件夹
     /// - Parameter filePath: 文件路径
     /// - Returns: 返回是否是文件夹，nil表示不是有效路径
@@ -21,29 +27,38 @@ extension FileManager {
         return result == false ? nil : isDirectory
     }
     
-    func enumerator(at filePath: String, deepRecursion: Bool = false, handle: (String, Bool) -> Bool) -> Bool {
+    /// 枚举指定目录
+    /// - Parameters:
+    ///   - filePath: 文件路径
+    ///   - deepRecursion: 是否遍历子目录
+    ///   - handle: 处理遍历文件路径
+    func enumerator(at filePath: String, deepRecursion: Bool = false, handle: (String, Bool) -> EnumeratorOperate) {
         guard let isDir = self.vertifyIsDirectory(filePath: filePath) else {
-            return false
+            return
         }
         guard !isDir else {
             _ = handle(filePath, false)
-            return true
+            return
         }
         guard let directoryEnumerator = self.enumerator(atPath: filePath) else {
-            return false
+            return
         }
         while let path = directoryEnumerator.nextObject() as? String {
-            guard let isDir = vertifyIsDirectory(filePath: path) else { return false }
-            var stop = false
-            stop = handle(path, isDir)
-            if stop {
-                break
+            guard let isDir = vertifyIsDirectory(filePath: path) else { return }
+            var operate = EnumeratorOperate.none
+            operate = handle(path, isDir)
+            switch operate {
+            case .none:
+                enumerator(at: path, deepRecursion: deepRecursion) {
+                    operate = handle($0,$1)
+                    return operate
+                }
+            case .continue: continue
+            case .return: return
             }
-            let isHandle = enumerator(at: path, deepRecursion: deepRecursion) {
-                stop = handle($0,$1)
-                return stop
+            if operate == .return {
+                return
             }
-            
         }
     }
 }
