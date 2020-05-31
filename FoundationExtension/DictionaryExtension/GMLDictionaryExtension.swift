@@ -5,14 +5,14 @@
 
 import Foundation
 
-extension Dictionary {
+public extension Dictionary {
     func ml_toJSONString(encoding: String.Encoding = String.Encoding.utf8) throws -> String? {
         let data = try JSONSerialization.data(withJSONObject: self, options: .prettyPrinted)
         return String(data: data, encoding: .utf8)
     }
 }
 
-extension Dictionary where Key : Hashable {
+public extension Dictionary where Key : Hashable {
     
     /// 追加 Dictionary 数据
     @discardableResult

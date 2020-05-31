@@ -14,7 +14,7 @@ import Foundation
 /// - isEmptyEndSplice: 字符串长度为 0 终止字符串拼接
 /// - ignoreAllEmpty: 忽略所有的字符串长度为 0 的字符串
 /// - nilAndEmptyEndSplice: 字符串空对象或字符串长度为 0 终止字符串拼接
-enum CGSpliceStringType : Int {
+public enum CGSpliceStringType : Int {
     case isEmptyEndSplice
     case ignoreAllEmpty
     case nilAndEmptyEndSplice
@@ -25,7 +25,7 @@ enum CGSpliceStringType : Int {
 //}
 
 //MARK:- 拼接字符串
-extension String {
+public extension String {
     
     static func spliceString(spliceType: CGSpliceStringType, strs: String?...) -> String? {
         

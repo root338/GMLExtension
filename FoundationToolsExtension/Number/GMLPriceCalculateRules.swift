@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension Double {
+public extension Double {
     
     /// 银行家舍入法
     /// 四舍六入,逢五看左边，左边为奇数进位，左边为偶数舍去

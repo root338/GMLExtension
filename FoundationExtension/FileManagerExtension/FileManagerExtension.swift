@@ -8,7 +8,7 @@
 
 import Foundation
 
-extension FileManager {
+public extension FileManager {
     
     enum EnumeratorOperate {
         case none
@@ -36,14 +36,15 @@ extension FileManager {
         guard let isDir = self.vertifyIsDirectory(filePath: filePath) else {
             return
         }
-        guard !isDir else {
+        guard isDir else {
             _ = handle(filePath, false)
             return
         }
         guard let directoryEnumerator = self.enumerator(atPath: filePath) else {
             return
         }
-        while let path = directoryEnumerator.nextObject() as? String {
+        while let fileName = directoryEnumerator.nextObject() as? String {
+            let path = filePath.ml_append(pathComponent: fileName)
             guard let isDir = vertifyIsDirectory(filePath: path) else { return }
             var operate = EnumeratorOperate.none
             operate = handle(path, isDir)

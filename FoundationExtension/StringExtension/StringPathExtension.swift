@@ -8,12 +8,15 @@
 
 import Foundation
 
-extension String {
+public extension String {
     var ml_pathExtension: String {
         return (self as NSString).pathExtension
     }
     func ml_append(pathExtension: String) -> String? {
         return (self as NSString).appendingPathExtension(pathExtension)
+    }
+    func ml_append(pathComponent: String) -> String {
+        return (self as NSString).appendingPathComponent(pathComponent)
     }
     
     /// 是否是文件夹，nil不是有效路径，true是文件夹/false是文件
