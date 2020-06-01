@@ -48,6 +48,18 @@ public extension GMLRichTextBuilder {
         currentAttributedString().addAttributes(attributes, range: range)
         return self
     }
+    
+    func appendSpace(_ count: UInt, attributes: GMLAttributesSet? = nil) -> Self {
+        
+    }
+}
+
+//MARK:-
+public extension GMLRichTextBuilder {
+    
+    func attributes(range: NSRange) -> GMLAttributesSet {
+        
+    }
 }
 
 extension GMLRichTextBuilder {

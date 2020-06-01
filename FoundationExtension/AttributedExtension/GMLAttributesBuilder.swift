@@ -78,6 +78,7 @@ public extension GMLAttributesBuilder {
         }
         return nil
     }
+    /// 删除知道标识下的富文本属性
     func remove(for identifier: String) -> GMLAttributesSet? {
         for item in stack {
             if let key = item.key(), key == identifier {
@@ -143,8 +144,8 @@ extension GMLAttributesBuilder {
 private extension GMLAttributesBuilder {
     /// 创建一个属性容器
     func container(attributes: GMLAttributesSet? = nil, identifier: String? = nil) -> GMLAttributesContainer {
-        if identifier != nil {
-            <#code#>
+        if let key = identifier {
+            _ = remove(for: key)
         }
         var set = GMLAttributesSet()
         if self.attributes != nil {

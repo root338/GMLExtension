@@ -60,9 +60,18 @@ public extension GMLAttributesBuilder {
     }
 }
 
+//MARK:- Font/Color set
 public extension GMLAttributesBuilder {
-//    func fontSize(_ fontSize: CGFloat) {
-//        GMLFont.systemFont(ofSize: <#T##CGFloat#>, weight: <#T##NSFont.Weight#>)
-//    }
+    func font(ofSize size: CGFloat, weight: GMLFontWeight = .regular) -> Self {
+        return font(GMLFont.ml_font(ofSize: size, weight: weight))
+    }
+    
+    func foregroundColor(_ hex: Int) -> Self {
+        return foregroundColor(GMLColor(hex))
+    }
+    func backgroundColor(_ hex: Int) -> Self {
+        return backgroundColor(GMLColor(hex))
+    }
 }
+
 
