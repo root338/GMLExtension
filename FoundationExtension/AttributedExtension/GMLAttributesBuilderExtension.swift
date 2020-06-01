@@ -1,5 +1,5 @@
 //
-//  GMLAttributesBuilder+ParagraphStyle.swift
+//  GMLAttributesBuilderExtension.swift
 //  MyDrawingBoard
 //
 //  Created by GML on 2020/5/30.
@@ -13,6 +13,7 @@ import UIKit
 import AppKit
 #endif
 
+//MARK:- NSParagraphStyle set
 /// 设置段落属性内内容更方便
 public extension GMLAttributesBuilder {
     func lineSpacing(_ lineSpacing: CGFloat) -> Self {
@@ -28,25 +29,20 @@ public extension GMLAttributesBuilder {
         paragraphStyle().alignment = alignment
         return self
     }
-}
-
-#if os(iOS)
-public extension GMLAttributesBuilder {
     
+#if os(iOS)
     /// 设置段落行间距，并减去 UIFont 的 lineHeight - pointSize 的值，如果没有则与 lineSpacing() 相同
     /// - Parameter lineSpacing: 行间距
     func lineSpacingMinus(_ lineSpacing: CGFloat) -> Self {
-        guard let font = currentContainer().get()[.font] as? UIFont else {
+        guard let font = currentContainer().get()[.font] as? GMLFont else {
             return self.lineSpacing(lineSpacing)
         }
         paragraphStyle().lineSpacing = lineSpacing - (font.lineHeight - font.pointSize)
         return self
     }
-    
-}
 #endif
-
-private extension GMLAttributesBuilder {
+    
+    /// 获取段落，没有就创建
     private func paragraphStyle<T: NSMutableParagraphStyle>() -> T {
         let paragraphStyleKey : GMLAttributesKey = .paragraphStyle
         
@@ -63,3 +59,10 @@ private extension GMLAttributesBuilder {
         return update(style: NSParagraphStyle.default.mutableCopy() as! T)
     }
 }
+
+public extension GMLAttributesBuilder {
+//    func fontSize(_ fontSize: CGFloat) {
+//        GMLFont.systemFont(ofSize: <#T##CGFloat#>, weight: <#T##NSFont.Weight#>)
+//    }
+}
+

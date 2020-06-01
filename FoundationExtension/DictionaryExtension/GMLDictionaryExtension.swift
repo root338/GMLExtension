@@ -26,6 +26,7 @@ public extension Dictionary where Key : Hashable {
         return didAddValue.count == 0 ? nil : didAddValue
     }
     
+    /// 链接 self/dict 拼接为新字典后返回
     func ml_splice(dict: [Key : Value]) -> Self {
         var newValue = self
         for (key, value) in dict {
