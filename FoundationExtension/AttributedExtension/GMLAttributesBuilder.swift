@@ -42,11 +42,11 @@ public extension GMLAttributesBuilder {
     ///   - attributes: 添加的默认属性
     ///   - identifier: 该属性标识，如果存在，则覆盖之前的
     func push(attributes: GMLAttributesSet? = nil, identifier: String? = nil) -> Self {
-        stack.append(container(attributes: attributes))
+        stack.append(container(attributes: attributes, identifier: identifier))
         return self
     }
     /// 弹出最近一个属性
-    func pop() -> GMLAttributesSet? {
+    func popLast() -> GMLAttributesSet? {
         return stack.popLast()?.get()
     }
     /// 获取最后一个属性
@@ -78,7 +78,7 @@ public extension GMLAttributesBuilder {
         }
         return nil
     }
-    /// 删除知道标识下的富文本属性
+    /// 删除指定标识下的富文本属性
     func remove(for identifier: String) -> GMLAttributesSet? {
         for item in stack {
             if let key = item.key(), key == identifier {

@@ -8,13 +8,15 @@
 
 import Foundation
 
+public typealias GMLAttributedAppendCallback = ((NSMutableAttributedString) -> Void)
+
 /// 富文本构建器
 public class GMLRichTextBuilder: NSObject {
     
     var defaultAttributes: GMLAttributesSet?
     private lazy var attributedStringStack = [NSMutableAttributedString]()
 }
-
+//MARK:- 对容器进行操作
 public extension GMLRichTextBuilder {
     /// 压入一个新的富文本
     func push(_ text: String, attributes: GMLAttributesSet? = nil) -> Self {
@@ -22,44 +24,78 @@ public extension GMLRichTextBuilder {
         return self
     }
     /// 弹出最后一个富文本
-    func pop() -> NSMutableAttributedString? {
+    func popLast() -> NSMutableAttributedString? {
         return attributedStringStack.popLast()
     }
-    func last() -> NSMutableAttributedString? {
+    /// 获取最后一个富文本
+    var last: NSMutableAttributedString? {
+        return attributedStringStack.last
+    }
+    /// 当前指定的富文本
+    var currentAtt: NSMutableAttributedString? {
         return attributedStringStack.last
     }
 }
-
+//MARK:- 对指定富文本进行操作
 public extension GMLRichTextBuilder {
+    //MARK:- 富文本修改
+    
+    func append(_ att: NSAttributedString) -> Self {
+        currentAttributedString().append(att)
+        return self
+    }
+    
     /// 对当前富文本追加新的富文本
-    func append(_ text: String?, attributes: GMLAttributesSet? = nil) -> Self {
+    /// - Parameters:
+    ///   - text: 添加的文本
+    ///   - attributes: 设置的属性
+    ///   - didAddConfig: 已经添加回调，传入的是新添加的富文本
+    func append(_ text: String?, attributes: GMLAttributesSet? = nil, didAddCallback: GMLAttributedAppendCallback? = nil) -> Self {
         guard let string = text else {
             return self
         }
-        currentAttributedString().append(.init(string: string, attributes: append(attributes)))
+        let newAtt = NSMutableAttributedString(string: string, attributes: append(attributes))
+        currentAttributedString().append(newAtt)
+        didAddCallback?(newAtt)
         return self
     }
+    /// 添加预定义的常量字符串
+    /// - Parameters:
+    ///   - str: 预定义的常量字符串
+    ///   - count: 添加的个数
+    func append(_ str: GMLConstantString, count : UInt = 1, attributes: GMLAttributesSet? = nil, didAddCallback: GMLAttributedAppendCallback? = nil) -> Self {
+        guard let appendStr = str.rawValue.copy(count: count) else {
+            return self
+        }
+        return append(appendStr, attributes: attributes, didAddCallback: didAddCallback)
+    }
+    
+    //MARK:- 富文本属性修改
     /// 对当前富文本添加属性
     func add(attributes: GMLAttributesSet) -> Self {
         return add(attributes: attributes, range: NSRange(location: 0, length: currentAttributedString().length))
     }
-    /// 对当前富文本
+    /// 对当前富文本指定区域添加属性
     func add(attributes: GMLAttributesSet, range: NSRange) -> Self {
         currentAttributedString().addAttributes(attributes, range: range)
         return self
     }
-    
-    func appendSpace(_ count: UInt, attributes: GMLAttributesSet? = nil) -> Self {
-        
-    }
 }
 
-//MARK:-
+//MARK:- 获取富文本信息
 public extension GMLRichTextBuilder {
-    
-    func attributes(range: NSRange) -> GMLAttributesSet {
-        
+    /// 获取最后一个字符的富文本属性
+    func lastAttributes() -> GMLAttributesSet? {
+        guard let targetAtt = currentAtt else {
+            return nil
+        }
+        return targetAtt.attributes(at: targetAtt.ml_lastLocation, effectiveRange: nil)
     }
+
+//    func attributes(range: Range<UInt>) -> GMLAttributesSet? {
+//
+//        currentAttributedString().attributes(at: <#T##Int#>, effectiveRange: <#T##NSRangePointer?#>)
+//    }
 }
 
 extension GMLRichTextBuilder {
@@ -69,6 +105,7 @@ extension GMLRichTextBuilder {
         }
         return attributedStringStack.last!
     }
+    
 }
 
 private extension GMLRichTextBuilder {
