@@ -12,6 +12,15 @@ public extension String {
     var ml_pathExtension: String {
         return (self as NSString).pathExtension
     }
+    var ml_pathComponent: [String] {
+        return (self as NSString).pathComponents
+    }
+    var ml_lastPathComponent: String {
+        return (self as NSString).lastPathComponent
+    }
+    var ml_deletingPathExtension: String {
+        return (self as NSString).deletingPathExtension
+    }
     func ml_append(pathExtension: String) -> String? {
         return (self as NSString).appendingPathExtension(pathExtension)
     }
@@ -19,8 +28,9 @@ public extension String {
         return (self as NSString).appendingPathComponent(pathComponent)
     }
     
+    
     /// 是否是文件夹，nil不是有效路径，true是文件夹/false是文件
     var ml_isFileDirectory: Bool? {
-        return FileManager.default.vertifyIsDirectory(filePath: self)
+        return FileManager.default.isDirectory(filePath: self)
     }
 }

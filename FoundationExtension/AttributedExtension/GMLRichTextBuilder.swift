@@ -89,12 +89,15 @@ public extension GMLRichTextBuilder {
         guard let targetAtt = currentAtt else {
             return nil
         }
-        return targetAtt.attributes(at: targetAtt.ml_lastLocation, effectiveRange: nil)
+        if let att = currentAtt, let location = att.ml_lastLocation {
+            return targetAtt.attributes(at: location, effectiveRange: nil)
+        }
+        return nil
     }
-
-//    func attributes(range: Range<UInt>) -> GMLAttributesSet? {
+    
+//    func attributes(range: NSRange) -> GMLAttributesSet? {
 //
-//        currentAttributedString().attributes(at: <#T##Int#>, effectiveRange: <#T##NSRangePointer?#>)
+//        currentAttributedString().attributes(at: <#T##Int#>, effectiveRange: NSRangePointer?)
 //    }
 }
 
