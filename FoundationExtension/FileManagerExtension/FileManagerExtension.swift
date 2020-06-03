@@ -49,6 +49,7 @@ public extension FileManager {
             operate = handle(path, isDir)
             switch operate {
             case .none:
+                if deepRecursion { continue }
                 enumerator(at: path, deepRecursion: deepRecursion) {
                     operate = handle($0,$1)
                     return operate

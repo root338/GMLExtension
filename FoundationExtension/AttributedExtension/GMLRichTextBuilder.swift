@@ -70,6 +70,20 @@ public extension GMLRichTextBuilder {
         return append(appendStr, attributes: attributes, didAddCallback: didAddCallback)
     }
     
+    func insert(_ att: NSAttributedString, at location: Int) -> Self {
+        currentAttributedString().insert(att, at: location)
+        return self
+    }
+    func insert(_ text: String?, attributes: GMLAttributesSet? = nil, at location: Int, didAddCallback: GMLAttributedAppendCallback? = nil) -> Self {
+        guard let string = text else {
+            return self
+        }
+        let newAtt = NSMutableAttributedString(string: string, attributes: append(attributes))
+        currentAttributedString().insert(newAtt, at: location)
+        didAddCallback?(newAtt)
+        return self
+    }
+    
     //MARK:- 富文本属性修改
     /// 对当前富文本添加属性
     func add(attributes: GMLAttributesSet) -> Self {
