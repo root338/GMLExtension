@@ -24,7 +24,7 @@ public extension NSOpenPanel {
         panel.allowsMultipleSelection = false
         
         func result(_ result: NSApplication.ModalResponse) -> Result<URL, OperateError> {
-            if result == .OK {
+            if result != .OK {
                 return Result.failure(.cancel)
             }
             guard let url = panel.url else {

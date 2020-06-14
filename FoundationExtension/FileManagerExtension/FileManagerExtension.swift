@@ -10,6 +10,10 @@ import Foundation
 
 public extension FileManager {
     
+    enum URLResourceError: Error {
+        case isEmpty
+    }
+    
     enum EnumeratorOperate {
         case none
         case `continue`
@@ -29,9 +33,9 @@ public extension FileManager {
     /// 枚举指定目录
     /// - Parameters:
     ///   - filePath: 文件路径
-    ///   - deepRecursion: 是否遍历子目录
+    ///   - isDepth: 是否深度遍历子目录
     ///   - handle: 处理遍历文件路径 (文件路径, 是否目录) -> 执行选项
-    func enumerator(at filePath: String, deepRecursion: Bool = false, handle: (String, Bool) -> EnumeratorOperate) {
+    func enumerator(at filePath: String, isDepth: Bool = false, handle: (String, Bool) -> EnumeratorOperate) {
         guard let isDir = self.isDirectory(filePath: filePath) else {
             return
         }
@@ -39,7 +43,7 @@ public extension FileManager {
             _ = handle(filePath, false)
             return
         }
-        guard let directoryEnumerator = self.enumerator(atPath: filePath) else {
+        guard let directoryEnumerator = enumerator(atPath: filePath) else {
             return
         }
         while let fileName = directoryEnumerator.nextObject() as? String {
@@ -49,8 +53,8 @@ public extension FileManager {
             operate = handle(path, isDir)
             switch operate {
             case .none:
-                if deepRecursion { continue }
-                enumerator(at: path, deepRecursion: deepRecursion) {
+                if isDepth { continue }
+                enumerator(at: path, isDepth: isDepth) {
                     operate = handle($0,$1)
                     return operate
                 }
@@ -64,12 +68,36 @@ public extension FileManager {
     }
     
     /// 当前路径下的子目录数组
-    func shallowSubpaths(atPath path: String) -> [String]? {
+    func ml_currentsubpaths(atPath path: String) -> [String]? {
         guard let dirEnum = self.enumerator(atPath: path) else { return nil }
         var subpaths = [String]()
         while let path = dirEnum.nextObject() as? String {
             subpaths.append(path)
         }
         return subpaths
+    }
+    
+    func enumerator(at url: URL, options: (resourceKeys: [URLResourceKey]?, enumOptions: DirectoryEnumerationOptions) = ([.isDirectoryKey], [.skipsSubdirectoryDescendants, .skipsHiddenFiles]), handle: (URL, () throws -> URLResourceValues) -> EnumeratorOperate, errorHandle: ((URL, Error) -> Bool)? = nil) {
+        guard let directoryEnumerator = enumerator(at: url, includingPropertiesForKeys: options.resourceKeys, options: options.enumOptions, errorHandler: errorHandle) else {
+            return
+        }
+        var resourceKeySet : Set<URLResourceKey>?
+        for case let fileURL as URL in directoryEnumerator {
+            func getURLResourceValue() throws -> URLResourceValues {
+                if resourceKeySet == nil {
+                    if options.resourceKeys == nil {
+                        throw URLResourceError.isEmpty
+                    }
+                    resourceKeySet = Set<URLResourceKey>(options.resourceKeys!)
+                }
+                let values = try fileURL.resourceValues(forKeys: resourceKeySet!)
+                return values
+            }
+            switch handle(fileURL, getURLResourceValue) {
+            case .none: fallthrough
+            case .continue: continue
+            case .return: return
+            }
+        }
     }
 }

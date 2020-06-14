@@ -28,7 +28,9 @@ public extension String {
         return (self as NSString).appendingPathComponent(pathComponent)
     }
     
-    
+    var isExistFilePath: Bool {
+        return FileManager.default.fileExists(atPath: self)
+    }
     /// 是否是文件夹，nil不是有效路径，true是文件夹/false是文件
     var ml_isFileDirectory: Bool? {
         return FileManager.default.isDirectory(filePath: self)
