@@ -17,11 +17,9 @@ public extension NSOpenPanel {
     
     typealias ResultCompletion = (Result<URL, OperateError>) -> Void
     
-    static func showSelectedFolder(sheetWindow: NSWindow? = nil, completion:  @escaping ResultCompletion) -> NSOpenPanel {
+    static func show(sheetWindow: NSWindow? = nil, set:((NSOpenPanel) -> Void)?, completion: @escaping ResultCompletion) -> NSOpenPanel {
         let panel = NSOpenPanel()
-        panel.canChooseDirectories = true
-        panel.canChooseFiles = false
-        panel.allowsMultipleSelection = false
+        set?(panel)
         
         func result(_ result: NSApplication.ModalResponse) -> Result<URL, OperateError> {
             if result != .OK {
@@ -42,6 +40,14 @@ public extension NSOpenPanel {
             }
         }
         return panel
+    }
+    
+    static func showSelectedFolder(sheetWindow: NSWindow? = nil, completion:  @escaping ResultCompletion) -> NSOpenPanel {
+        return show(sheetWindow: sheetWindow, set: { (panel) in
+            panel.canChooseDirectories = true
+            panel.canChooseFiles = false
+            panel.allowsMultipleSelection = false
+        }, completion: completion)
     }
     
     static func showToCurrentWindow(_ completion: @escaping ResultCompletion) -> NSOpenPanel {
