@@ -6,7 +6,7 @@
 //  Copyright © 2020 GML. All rights reserved.
 //
 
-import AppKit
+import Cocoa
 
 extension NSImage {
     var imagePixelSize : NSSize? {

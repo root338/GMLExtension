@@ -18,6 +18,8 @@ public extension FileManager {
         case none
         case `continue`
         case `return`
+        /// 进入遍历
+        case enter
     }
     
     /// 验证文件路径是否是文件夹
@@ -35,7 +37,7 @@ public extension FileManager {
     ///   - filePath: 文件路径
     ///   - isDepth: 是否深度遍历子目录
     ///   - handle: 处理遍历文件路径 (文件路径, 是否目录) -> 执行选项
-    func enumerator(at filePath: String, isDepth: Bool = false, handle: (String, Bool) -> EnumeratorOperate) {
+    func enumerator(at filePath: String, isDepth: Bool = false, handle: (_ filePath: String, _ isDir: Bool) -> EnumeratorOperate) {
         guard let isDir = self.isDirectory(filePath: filePath) else {
             return
         }
@@ -53,16 +55,18 @@ public extension FileManager {
             operate = handle(path, isDir)
             switch operate {
             case .none:
-                if isDepth { continue }
+                if !isDepth { continue }
                 enumerator(at: path, isDepth: isDepth) {
                     operate = handle($0,$1)
                     return operate
                 }
             case .continue: continue
             case .return: return
-            }
-            if operate == .return {
-                return
+            case .enter:
+                enumerator(at: path, isDepth: isDepth) {
+                    operate = handle($0,$1)
+                    return operate
+                }
             }
         }
     }
@@ -97,6 +101,8 @@ public extension FileManager {
             case .none: fallthrough
             case .continue: continue
             case .return: return
+            case .enter:
+                enumerator(at: fileURL, options: options, handle: handle, errorHandle: errorHandle)
             }
         }
     }
